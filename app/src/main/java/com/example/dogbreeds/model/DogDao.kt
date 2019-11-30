@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 
-//data access object
+// data access object
 @Dao
 interface DogDao {
     @Insert
