@@ -2,10 +2,10 @@ package com.example.dogbreeds.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.dogbreeds.model.DogBreed
 import com.example.dogbreeds.model.DogDatabase
 import com.example.dogbreeds.model.DogsApiService
+import com.example.dogbreeds.util.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
@@ -13,6 +13,9 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 
 class ListViewModel(application: Application): BaseViewModel(application) {
+
+    private var prefHelper = SharedPreferencesHelper(getApplication())
+    
 
     private val dogsService = DogsApiService()
     private val disposable = CompositeDisposable() //handles memory leaks
@@ -44,7 +47,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         )
     }
 
-    private fun dogsRetreived(dogList: List<DogBreed>) {
+    private fun dogsRetrieved(dogList: List<DogBreed>) {
         dogs.value = dogList
         dogsLoadError.value = false
         loading.value = false
@@ -60,8 +63,9 @@ class ListViewModel(application: Application): BaseViewModel(application) {
                 list[i].uuid = result[i].toInt()
                 i++
             }
-            dogsRetreived(list)
+            dogsRetrieved(list)
         }
+        prefHelper.saveUpdateTime(System.nanoTime())
     }
 
     override fun onCleared() {
