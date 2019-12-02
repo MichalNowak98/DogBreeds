@@ -1,6 +1,7 @@
 package com.example.dogbreeds.viewmodel
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.dogbreeds.model.DogBreed
 import com.example.dogbreeds.model.DogDatabase
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 class ListViewModel(application: Application): BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
-    
+    private val refreshTime = 300000000000L  //five seconds in nanoseconds : 5min * 60s/min * 1000ms/s * 1000us/ms * 1000ns/us
 
     private val dogsService = DogsApiService()
     private val disposable = CompositeDisposable() //handles memory leaks
@@ -25,7 +26,25 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     val loading = MutableLiveData<Boolean>()
 
     fun refresh() {
+        val updateTime = prefHelper.getUpdateTime()
+        if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
+            fetchFromDatabase()
+        } else {
+            fetchFromRemote()
+        }
+    }
+
+    fun refreshBypassCache() {
         fetchFromRemote()
+    }
+
+    private fun fetchFromDatabase() {
+        loading.value = true
+        launch {
+            val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
+            dogsRetrieved(dogs)
+            Toast.makeText(getApplication(), "Dogs retrieved from database", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun fetchFromRemote() {
@@ -37,6 +56,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
                 .subscribeWith(object: DisposableSingleObserver<List<DogBreed>>() {
                     override fun onSuccess(dogList: List<DogBreed>) {
                         storeDogsLocally(dogList)
+                        Toast.makeText(getApplication(), "Dogs retrieved from endpoint", Toast.LENGTH_LONG).show()
                     }
                     override fun onError(e: Throwable) {
                         dogsLoadError.value = true
