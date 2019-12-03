@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <variable
+            name="dog"
+            type="com.example.dogbreeds.model.DogBreed" />
+    </data>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -26,13 +32,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Title"
-                android:text="DogName"/>
+                android:text="@{dog.dogBreed}"/>
             <TextView
                 android:id="@+id/lifespan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Text"
-                android:text="Lifespan"/>
+                android:text="@{dog.lifeSpan}"/>
         </LinearLayout>
     </LinearLayout>
 
