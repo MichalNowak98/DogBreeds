@@ -89,7 +89,6 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     }
 
     override fun onCleared() {
-
         disposable.clear()
     }
 }

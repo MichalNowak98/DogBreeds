@@ -24,7 +24,7 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <argument
             android:name="dogUuid"
-            android:defaultValue="0"
+            android:defaultValue="1"
             app:argType="integer"/>
     </fragment>
 </navigation>
