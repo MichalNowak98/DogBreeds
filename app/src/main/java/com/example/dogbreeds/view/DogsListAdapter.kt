@@ -13,7 +13,13 @@ import com.example.dogbreeds.util.getProgressDrawable
 import com.example.dogbreeds.util.loadImage
 import kotlinx.android.synthetic.main.item_dog.view.*
 
-class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :RecyclerView.Adapter<DogsListAdapter.DogViewHolder>(){
+class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :RecyclerView.Adapter<DogsListAdapter.DogViewHolder>(), DogClickListener{
+    override fun onDogClicked(v: View) {
+        val uuid = v.dogId.text.toString().toInt()
+        val action = ListFragmentDirections.actionDetailFragment()
+        action.dogUuid = uuid
+        Navigation.findNavController(v).navigate(action)
+    }
 
     fun updateDogList(newDogsList: List<DogBreed>) {
         dogsList.clear()
@@ -32,12 +38,12 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :RecyclerView.Adapter<D
 
     override fun onBindViewHolder(holder: DogViewHolder, position: Int) {
         holder.view.dog = dogsList[position]
+        holder.view.listener = this
 //        holder.view.name.text = dogsList[position].dogBreed
 //        holder.view.lifespan.text = dogsList[position].lifeSpan
 //        holder.view.setOnClickListener{
 //            val action = ListFragmentDirections.actionDetailFragment()
 //            action.dogUuid = dogsList[position].uuid
-//            var x = dogsList[position].uuid
 //            Navigation.findNavController(it).navigate(action)
 //        }
 //        holder.view.imageVIew.loadImage(dogsList[position].imageUrl, getProgressDrawable( holder.view.imageVIew.context))
