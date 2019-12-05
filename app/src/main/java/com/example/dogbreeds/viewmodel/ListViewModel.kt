@@ -13,11 +13,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
 
 class ListViewModel(application: Application): BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
-    private val refreshTime = 300000000000L  //five seconds in nanoseconds : 5min * 60s/min * 1000ms/s * 1000us/ms * 1000ns/us
+    private var refreshTime = 300000000000L  //five seconds in nanoseconds : 5min * 60s/min * 1000ms/s * 1000us/ms * 1000ns/us
 
     private val dogsService = DogsApiService()
     private val disposable = CompositeDisposable() //handles memory leaks
@@ -27,11 +28,23 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     val loading = MutableLiveData<Boolean>()
 
     fun refresh() {
+        checkCacheDuration()
         val updateTime = prefHelper.getUpdateTime()
         if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
             fetchFromDatabase()
         } else {
             fetchFromRemote()
+        }
+    }
+
+    private fun checkCacheDuration() {
+        val cachePreference = prefHelper.getCacheDuration()
+
+        try {
+            val cachePreferenceInt = cachePreference?.toInt() ?: 5 * 60
+            refreshTime = cachePreferenceInt.times(1000 * 1000 * 1000L ) //seconds to nanoseconds
+        } catch (e: NumberFormatException) {
+            e.printStackTrace()
         }
     }
 
