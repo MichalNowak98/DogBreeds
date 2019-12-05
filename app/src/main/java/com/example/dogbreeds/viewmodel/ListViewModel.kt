@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.dogbreeds.model.DogBreed
 import com.example.dogbreeds.model.DogDatabase
 import com.example.dogbreeds.model.DogsApiService
+import com.example.dogbreeds.util.NotificationsHelper
 import com.example.dogbreeds.util.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -44,6 +45,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
             val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
             dogsRetrieved(dogs)
             Toast.makeText(getApplication(), "Dogs retrieved from database", Toast.LENGTH_LONG).show()
+            NotificationsHelper(getApplication()).createNotification()
         }
     }
 
