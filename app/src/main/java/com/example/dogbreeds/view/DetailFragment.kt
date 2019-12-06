@@ -108,7 +108,12 @@ class DetailFragment : Fragment() {
                 (activity as MainActivity).checkSmsPermission()
             }
             R.id.action_share -> {
-
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this dog")
+                intent.putExtra(Intent.EXTRA_SUBJECT, "${currentDog?.dogBreed} is bred for ${currentDog?.bredFor}")
+                intent.putExtra(Intent.EXTRA_STREAM, currentDog?.imageUrl)  //third party app may choose to implement this, retrieve the stream or disregard it
+                startActivity(Intent.createChooser(intent, "Share with"))
             }
         }
         return super.onOptionsItemSelected(item)
